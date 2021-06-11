@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,10 +18,11 @@ namespace GraphicsApp
         private Random rand;
         Point p1;
         Point p2;
-        int DrawingState { get; set; } 
+        int DrawingState { get; set; }
+       
         public Form1()
         {
-            DrawingState = 1;
+            
             InitializeComponent();
             rand = new Random();
         }
@@ -32,32 +34,47 @@ namespace GraphicsApp
 
         private void Form1_PaintRect(object sender, PaintEventArgs e)
         {
-            DrawingState = 1;
-            var randColour = Color.FromArgb(rand.Next(0, 255), rand.Next(0, 255), rand.Next(0, 255));
-            e.Graphics.DrawRectangle(new Pen(randColour, PenWidth), Rect);
+            if (DrawingState == 1)
+            {
+                DrawingState = 1;
+                var randColour = Color.FromArgb(rand.Next(0, 255), rand.Next(0, 255), rand.Next(0, 255));
+                e.Graphics.FillRectangle(new SolidBrush(randColour), Rect);
+            }
+            if (DrawingState == 2)
+            {
+                
+                SolidBrush sb = new SolidBrush(Color.Red);
+                e.Graphics.DrawLine(new Pen(sb), Rect.X, Rect.Y, Rect.X + Rect.Width, Rect.X + Rect.Height);
+                e.Graphics.DrawRectangle(new Pen(sb), Rect.X, Rect.Y, Rect.Width, Rect.Height);
+            }
         }
 
-        private void Form1_PaintFractal(object sender, PaintEventArgs e)
-        {
-            if (DrawingState != 2) { return; }
-            SolidBrush sb = new SolidBrush(Color.Red);
-            e.Graphics.DrawLine(new Pen(sb), p1.X, p1.Y, p2.X, p2.Y);
-        }
+       
         private void Form1_KeyPress(object sender, KeyPressEventArgs e)
         {
 
             DrawingState = 2;
-            p1 = new Point(this.Width / 2, this.Height);
-            p2 = new Point(this.Width / 2, this.Height / 2);
-           
-            DrawFractal(p1, p2, 5);
-            for (int i = 0; i <= 5; i++)
-            {
-                
-                Point p = new Point(p2.X < p1.X ? p2.X : p1.X, p2.Y < p1.Y ? p2.Y : p1.Y);
-                Rectangle Rect = new Rectangle(p.X, p.Y, Math.Abs(p1.X - p2.X), Math.Abs(p1.Y - p2.Y));
-                this.Invalidate(Rect);
-            }
+            Point StartPoint = new Point(rand.Next(this.Width), rand.Next(this.Height));
+            var startingPoint = StartPoint;
+            var finishPoint = new Point(StartPoint.X, Math.Abs(StartPoint.Y+100));
+            PenWidth = 1;
+            DrawFractal(startingPoint, finishPoint, 5);
+        }
+        
+        public void DrawFractal(Point startingPoint, Point finishPoint, int iteration)
+        {
+            if (iteration == 0) { return; }
+            var s = startingPoint;
+            var f = finishPoint;
+            Rect = new Rectangle(s.X, s.Y, Math.Abs(s.X - f.X), Math.Abs(s.Y - f.Y));
+            this.Invalidate(Rect);
+            Application.DoEvents();
+            DrawFractal(new Point(s.X,s.Y),new Point(f.X -50, f.Y +50), iteration-1);
+            DrawFractal(new Point(s.X, s.Y), new Point(f.X + 50, f.Y + 50), iteration - 1);
+            /*Rect = new Rectangle(s.X / 2, s.Y / 2, Math.Abs(s.X - f.X), Math.Abs(s.Y - f.Y));
+            this.Invalidate(Rect);
+            Application.DoEvents();
+            DrawFractal(new Point(Rect.X, Rect.Y), new Point(Rect.X + 50, Rect.Y + 50), iteration-1);*/
         }
 
         private int Distance(Point p1, Point p2)
@@ -89,6 +106,9 @@ namespace GraphicsApp
             Rect.Width = Math.Abs(p2.X - p1.X);
             Rect.Height = Math.Abs(p2.Y - p1.Y);
             this.Invalidate(Rect);
+            GraphicsPath g = new GraphicsPath();
+            g.
+            
         }
 
         private void updateTopLeftPosition(ref Point p1, ref Point p2) 

@@ -40,7 +40,6 @@ namespace GraphicsApp
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.Form1_PaintRect);
-            this.Paint += new System.Windows.Forms.PaintEventHandler(this.Form1_PaintFractal); 
             this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.Form1_KeyPress);
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseDown);
             this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseUp);
